@@ -1,0 +1,30 @@
+version: '3'
+services:
+  db:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: mysecretpassword
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    networks:
+      - pgbouncer_network
+
+  pgbouncer:
+    image: edoburu/pgbouncer:latest
+    depends_on:
+      - db
+    ports:
+      - "6432:6432"
+    volumes:
+      - ./pgbouncer.ini:/etc/pgbouncer/pgbouncer.ini
+      - ./userlist.txt:/etc/pgbouncer/userlist.txt
+    networks:
+      - pgbouncer_network
+
+networks:
+  pgbouncer_network:
+    driver: bridge
+
+volumes:
+  db_data:
